@@ -88,3 +88,5 @@ Sau khi đổi từ link cũ sang địa chỉ tên giải, dữ liệu trình d
 25 kiểm tra logic cho cả hai thể thức; 18 luồng trình duyệt từ xếp tên đến nhà vô địch ở bảng 9 người cũ và bảng 10 người hiện tại, chỉnh kết quả, hoàn tác/tải lại, nhập/xuất và từ chối dữ liệu hỏng/sai phương án, bảo vệ dữ liệu lưu sai phương án, lưu riêng hai trang, kéo thả và bỏ tên khỏi nhánh, trình chiếu, màn hình hẹp, giảm chuyển động và lỗi lưu dữ liệu. Kiểm tra tự động chạy bằng Edge/Chromium trên Windows; Safari chưa được kiểm tra trực tiếp vì môi trường không có WebKit.
 
 Phát hành lên GitHub Pages ngày 12/10/2026. API xác nhận `built`, nguồn `main`/`/`; cả hai trang và sáu tệp vận hành trả HTTP 200, nội dung khớp mã nguồn đã kiểm tra. Kiểm tra trình duyệt trên link thật xác nhận đủ chín tên, xếp tên hoạt động trên cả hai phương án và không có lỗi JavaScript.
+
+Cập nhật cùng ngày: đã phát hành bảng 10 người có Bách, hai sơ loại và chín trận. Kiểm tra link thật xác nhận trang chính/alias có 10 tên, tham khảo có 9 tên, cả bảy resource vận hành khớp source và không có lỗi JavaScript. Asset dùng URL phiên bản mới để tránh trình duyệt dùng mã 9 người đã cache.
