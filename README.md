@@ -79,4 +79,6 @@ Script `scripts/github-pages.py` dùng tài khoản Git đã đăng nhập qua G
 
 ## Kiểm tra đã thực hiện
 
-23 kiểm tra logic cho cả hai thể thức; 16 luồng trình duyệt từ xếp chín tên đến nhà vô địch, chỉnh kết quả, hoàn tác/tải lại, nhập/xuất và từ chối dữ liệu hỏng/sai phương án, lưu riêng hai trang, kéo thả và bỏ tên khỏi nhánh, trình chiếu, màn hình hẹp, giảm chuyển động và lỗi lưu dữ liệu. Kiểm tra tự động chạy bằng Edge/Chromium trên Windows; Safari chưa được kiểm tra trực tiếp vì môi trường không có WebKit.
+23 kiểm tra logic cho cả hai thể thức; 17 luồng trình duyệt từ xếp chín tên đến nhà vô địch, chỉnh kết quả, hoàn tác/tải lại, nhập/xuất và từ chối dữ liệu hỏng/sai phương án, bảo vệ dữ liệu lưu sai phương án, lưu riêng hai trang, kéo thả và bỏ tên khỏi nhánh, trình chiếu, màn hình hẹp, giảm chuyển động và lỗi lưu dữ liệu. Kiểm tra tự động chạy bằng Edge/Chromium trên Windows; Safari chưa được kiểm tra trực tiếp vì môi trường không có WebKit.
+
+Phát hành lên GitHub Pages ngày 12/10/2026. API xác nhận `built`, nguồn `main`/`/`; cả hai trang và sáu tệp vận hành trả HTTP 200, nội dung khớp mã nguồn đã kiểm tra. Kiểm tra trình duyệt trên link thật xác nhận đủ chín tên, xếp tên hoạt động trên cả hai phương án và không có lỗi JavaScript.

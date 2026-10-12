@@ -32,9 +32,9 @@
 
 **Interfaces:** newTournament(), placePlayer(state, playerId, slot), lockDraw(state), reopenDraw(state), getMatch(state, matchId), recordScore(state, matchId, a, b), clearScore(state, matchId), dependentResults(state, matchId), validateTournament(data); pure functions returning new state.
 
-- [ ] Write behavioral tests for allocation, duplicate/swap handling, all eight matches, corrections and imports.
-- [ ] Run tests and observe missing implementation.
-- [ ] Implement pure model; run full model suite until green.
+- [x] Write behavioral tests for allocation, duplicate/swap handling, all eight matches, corrections and imports.
+- [x] Run tests and observe missing implementation.
+- [x] Implement pure model; run full model suite until green.
 
 ### Task 2: Operating UI
 
@@ -42,15 +42,15 @@
 
 **Interfaces:** consumes core model only; renders roster, SVG links and match cards; sends manual placement/scoring actions.
 
-- [ ] Build roster, bracket, scoring dialog and draw locking.
-- [ ] Add animations, undo, backup import/export, persistence status and projection controls.
-- [ ] Verify browser flow from nine manual placements through eight matches and refresh; test import, correction, reduced motion and narrow viewport.
+- [x] Build roster, bracket, scoring dialog and draw locking.
+- [x] Add animations, undo, backup import/export, persistence status and projection controls.
+- [x] Verify browser flow from nine manual placements through eight matches and refresh; test import, correction, reduced motion and narrow viewport.
 
 ### Task 3: Delivery
 
 **Files:** scripts/serve.cjs, scripts/github-pages.py, README.md, .gitignore, .nojekyll.
 
-- [ ] Run model tests and browser verification, inspect desktop screenshot.
-- [ ] Review complete project; fix observed defects.
-- [ ] Initialize isolated repository, commit reviewed project, create/push dedicated GitHub repo and enable Pages.
-- [ ] Check deployed assets/site; provide MacBook link and backup instructions.
+- [x] Run model tests and browser verification, inspect desktop screenshot.
+- [x] Review complete project; fix observed defects.
+- [x] Initialize isolated repository, commit reviewed project, create/push dedicated GitHub repo and enable Pages.
+- [x] Check deployed assets/site; provide MacBook link and backup instructions.

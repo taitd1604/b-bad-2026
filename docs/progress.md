@@ -23,3 +23,7 @@ Task 2 expanded: complete — 16 browser flows pass, including original and bala
 Review: preliminary reviewer found inaccessible dialog names and missing return-to-roster control; both addressed. Reviewer encountered model capacity before final assessment; same reviewer resumed to inspect the final two-page scope.
 
 Final review limit: resumed reviewer again hit model capacity. Preliminary actionable findings were addressed; inline review and full behavioral suites used for the final scope. An additional browser regression reproduced wrong-format local data being assigned before the format check; now validate format first, then replace state. Added this protection to browser verification. Adjusted balanced-page explainer spacing after screenshot inspection.
+
+Task 3: complete — repository https://github.com/taitd1604/b-bad-2026 created, commit 2a1150a pushed to main, GitHub Pages enabled with main/root and status built. Both public pages return HTTP 200. The deployed index.html, balanced.html, styles.css, app.js, core.js and favicon.svg match local source hashes. Live browser smoke verifies both format links, nine-player roster and manual allocation with no JavaScript errors.
+Final verification: all 23 model cases and 17 browser paths PASS. Both formats remain available; all test backups and screenshots stay in ignored .qa, never published as tournament data.
+URLs: https://taitd1604.github.io/b-bad-2026/ and https://taitd1604.github.io/b-bad-2026/balanced.html.
