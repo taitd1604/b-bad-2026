@@ -8,6 +8,7 @@ export const PLAYERS = Object.freeze([
   { id: 'tien', name: 'Tiến', initials: 'T', color: '#bcb8ee' },
   { id: 'hoang', name: 'Hoàng', initials: 'H', color: '#e4d787' },
   { id: 'ninh', name: 'Ninh', initials: 'N', color: '#9acde3' },
+  { id: 'bach', name: 'Bách', initials: 'B', color: '#edb483' },
 ]);
 
 export const MATCHES = Object.freeze([
@@ -21,22 +22,21 @@ export const MATCHES = Object.freeze([
   { id: 'm8', number: 8, sources: [{ match: 'm5' }, { match: 'm7' }], x: 804, y: 212 },
 ]);
 
-const playerIds = new Set(PLAYERS.map(p => p.id));
-const matchIds = new Set(MATCHES.map(m => m.id));
 const copy = state => structuredClone(state);
 const ensure = (condition, message) => { if (!condition) throw new Error(message); };
 
 export const FORMATS = Object.freeze({
-  reference: { name:'Sơ đồ ban đầu', rounds:['Vòng đầu','Vòng trong','Bán kết','Chung kết'], note:'4 trận vòng đầu · 1 suất miễn vòng', matches:MATCHES, bye:true, championY:352 },
-  balanced: { name:'Nhánh cân đối', rounds:['Sơ loại','Tứ kết','Bán kết','Chung kết'], note:'1 trận sơ loại · 7 suất vào tứ kết', bye:false, championY:384, matches:Object.freeze([
-    { id:'m1', number:1, sources:[{slot:0},{slot:1}], x:0, y:242 },
-    { id:'m2', number:2, sources:[{match:'m1'},{slot:2}], x:268, y:54 },
-    { id:'m3', number:3, sources:[{slot:3},{slot:4}], x:268, y:176 },
-    { id:'m4', number:4, sources:[{slot:5},{slot:6}], x:268, y:298 },
-    { id:'m5', number:5, sources:[{slot:7},{slot:8}], x:268, y:420 },
-    { id:'m6', number:6, sources:[{match:'m2'},{match:'m3'}], x:536, y:115 },
-    { id:'m7', number:7, sources:[{match:'m4'},{match:'m5'}], x:536, y:359 },
-    { id:'m8', number:8, sources:[{match:'m6'},{match:'m7'}], x:804, y:237 },
+  reference: { name:'Bảng cũ · 9 người', playerCount:9, version:1, final:'m8', rounds:['Vòng đầu','Vòng trong','Bán kết','Chung kết'], note:'Bảng tham khảo 9 người · Giải hiện tại dùng bảng 10 người', matches:MATCHES, bye:true, championY:352 },
+  balanced: { name:'Giải 10 người', playerCount:10, version:2, final:'m9', rounds:['Sơ loại','Tứ kết','Bán kết','Chung kết'], note:'2 trận sơ loại · 6 suất vào tứ kết', bye:false, championY:384, matches:Object.freeze([
+    { id:'m1', number:1, sources:[{slot:0},{slot:1}], x:0, y:176 },
+    { id:'m2', number:2, sources:[{slot:2},{slot:3}], x:0, y:420 },
+    { id:'m3', number:3, sources:[{match:'m1'},{slot:4}], x:268, y:54 },
+    { id:'m4', number:4, sources:[{slot:5},{slot:6}], x:268, y:176 },
+    { id:'m5', number:5, sources:[{match:'m2'},{slot:7}], x:268, y:298 },
+    { id:'m6', number:6, sources:[{slot:8},{slot:9}], x:268, y:420 },
+    { id:'m7', number:7, sources:[{match:'m3'},{match:'m4'}], x:536, y:115 },
+    { id:'m8', number:8, sources:[{match:'m5'},{match:'m6'}], x:536, y:359 },
+    { id:'m9', number:9, sources:[{match:'m7'},{match:'m8'}], x:804, y:237 },
   ]) },
 });
 
@@ -46,15 +46,21 @@ export function getMatches(state) {
   return FORMATS[format].matches;
 }
 
+export function getPlayers(state) {
+  const format=state.format ?? 'reference';
+  ensure(Object.hasOwn(FORMATS,format),'Phương án sơ đồ không hợp lệ.');
+  return PLAYERS.slice(0,FORMATS[format].playerCount);
+}
+
 export function newTournament(format='reference') {
   ensure(Object.hasOwn(FORMATS,format),'Phương án sơ đồ không hợp lệ.');
-  return { version: 1, tournament: 'B-Bad 2026', format, phase: 'draw', slots: Array(9).fill(null), results: {} };
+  return { version: FORMATS[format].version, tournament: 'B-Bad 2026', format, phase: 'draw', slots: Array(FORMATS[format].playerCount).fill(null), results: {} };
 }
 
 export function placePlayer(state, playerId, slot) {
   ensure(state.phase === 'draw', 'Sơ đồ đã khóa. Mở lại xếp nhánh để thay đổi tên.');
-  ensure(Number.isInteger(slot) && slot >= 0 && slot < 9, 'Vị trí xếp nhánh không hợp lệ.');
-  ensure(playerId === null || playerIds.has(playerId), 'Tên người chơi không hợp lệ.');
+  ensure(Number.isInteger(slot) && slot >= 0 && slot < getPlayers(state).length, 'Vị trí xếp nhánh không hợp lệ.');
+  ensure(playerId === null || getPlayers(state).some(player=>player.id===playerId), 'Tên người chơi không hợp lệ.');
   const next = copy(state);
   const previous = playerId === null ? -1 : next.slots.indexOf(playerId);
   if (previous === slot) return next;
@@ -64,7 +70,9 @@ export function placePlayer(state, playerId, slot) {
 }
 
 export function lockDraw(state) {
-  ensure(state.slots.length === 9 && state.slots.every(id => playerIds.has(id)) && new Set(state.slots).size === 9, 'Xếp đủ 9 tên, bao gồm người miễn vòng, trước khi bắt đầu.');
+  const players=getPlayers(state);
+  const playerIds=new Set(players.map(player=>player.id));
+  ensure(state.slots.length === players.length && state.slots.every(id => playerIds.has(id)) && new Set(state.slots).size === players.length, `Xếp đủ ${players.length} tên trước khi bắt đầu.`);
   return { ...copy(state), phase: 'play' };
 }
 
@@ -97,7 +105,7 @@ function descendants(state,id) {
 }
 
 export function dependentResults(state, id) {
-  ensure(matchIds.has(id), 'Trận đấu không hợp lệ.');
+  ensure(getMatches(state).some(match=>match.id===id), 'Trận đấu không hợp lệ.');
   return descendants(state,id).filter(matchId => state.results[matchId]);
 }
 
@@ -115,7 +123,7 @@ export function recordScore(state, id, a, b) {
 }
 
 export function clearScore(state, id) {
-  ensure(matchIds.has(id), 'Trận đấu không hợp lệ.');
+  ensure(getMatches(state).some(match=>match.id===id), 'Trận đấu không hợp lệ.');
   const next = copy(state);
   for (const matchId of [id, ...descendants(state,id)]) delete next.results[matchId];
   return next;
@@ -123,16 +131,19 @@ export function clearScore(state, id) {
 
 export function validateTournament(data) {
   ensure(data && typeof data === 'object' && !Array.isArray(data), 'Bản sao lưu không hợp lệ.');
-  ensure(data.version === 1 && data.tournament === 'B-Bad 2026', 'Đây không phải bản sao lưu B-Bad 2026 được hỗ trợ.');
+  ensure(data.tournament === 'B-Bad 2026', 'Đây không phải bản sao lưu B-Bad 2026 được hỗ trợ.');
+  let state = newTournament(data.format === undefined ? 'reference' : data.format);
+  ensure(data.version === state.version, 'Bản sao lưu thuộc thể thức cũ. Giữ tệp để tham khảo; giải 10 người cần xếp nhánh mới.');
+  const playerIds=new Set(getPlayers(state).map(player=>player.id));
+  const matchIds=new Set(getMatches(state).map(match=>match.id));
   ensure(data.phase === 'draw' || data.phase === 'play', 'Trạng thái giải không hợp lệ.');
-  ensure(Array.isArray(data.slots) && data.slots.length === 9, 'Bản sao lưu cần đủ 9 vị trí.');
+  ensure(Array.isArray(data.slots) && data.slots.length === state.slots.length, `Bản sao lưu cần đủ ${state.slots.length} vị trí.`);
   ensure(data.slots.every(id => id === null || playerIds.has(id)), 'Bản sao lưu có tên người chơi lạ.');
   const assigned = data.slots.filter(id => id !== null);
   ensure(new Set(assigned).size === assigned.length, 'Bản sao lưu có người chơi bị trùng.');
   ensure(data.results && typeof data.results === 'object' && !Array.isArray(data.results), 'Dữ liệu tỉ số không hợp lệ.');
   ensure(Object.keys(data.results).every(id => matchIds.has(id)), 'Bản sao lưu có trận đấu lạ.');
   ensure(data.phase === 'play' || Object.keys(data.results).length === 0, 'Sơ đồ chưa khóa không thể có kết quả thi đấu.');
-  let state = newTournament(data.format === undefined ? 'reference' : data.format);
   state.slots = [...data.slots];
   if (data.phase === 'play') state = lockDraw(state);
   for (const { id } of getMatches(state)) {

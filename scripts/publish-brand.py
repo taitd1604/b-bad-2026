@@ -11,7 +11,7 @@ STAGE=ROOT/'.qa'/'brand-site'
 ORG='b-bad-2026'
 REPO=ORG+'.github.io'
 FULL=ORG+'/'+REPO
-ASSETS=['index.html','balanced.html','styles.css','app.js','core.js','favicon.svg','.nojekyll']
+ASSETS=['index.html','balanced.html','reference.html','styles.css','app.js','core.js','favicon.svg','.nojekyll']
 spec=importlib.util.spec_from_file_location('bbad_publish',ROOT/'scripts'/'github-pages.py')
 module=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)

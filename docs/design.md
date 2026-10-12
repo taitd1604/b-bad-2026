@@ -1,5 +1,9 @@
 # B-Bad 2026
 
+Phạm vi hiện hành: người dùng đã bổ sung Bách và duyệt thể thức 10 người. Trang chính/balanced.html: hai trận sơ loại (bốn tên) → bốn tứ kết (sáu tên trực tiếp cộng hai người thắng sơ loại) → hai bán kết → một chung kết, tổng chín trận, một set/trận. Thắng sơ loại 1 vào tứ kết 1, thắng sơ loại 2 vào tứ kết 3 để nằm ở hai nửa sơ đồ. reference.html giữ sơ đồ chín người gốc để tham khảo. Phần mô tả chín người bên dưới ghi lại thiết kế ban đầu.
+
+Chuyển dữ liệu: reference giữ version/key 1 và roster chín tên. balanced dùng version/key 2, roster mười tên và final m9. Không tự chuyển điểm đã chốt sang một sơ đồ khác. Giữ nguyên key balanced v1; cho xuất bản sao lưu dữ liệu cũ nếu có; từ chối nhập backup cũ vào phiên bản mới. Main và balanced alias dùng cùng tiến độ mười người.
+
 Web điều hành giải đơn trên một máy, dùng Safari/Chrome trên MacBook và phát hành bằng GitHub Pages. HTML/CSS/JavaScript tĩnh, không dependency và không dịch vụ lưu tỉ số trên máy chủ.
 
 Tên chính thức: Tài, Kha, Hiệp, Báu, Minh, Giang, Tiến, Hoàng, Ninh. Toàn bộ chín vị trí, bao gồm người miễn vòng đầu, được gán thủ công từ kết quả vòng quay ngoài. Không có chức năng random.

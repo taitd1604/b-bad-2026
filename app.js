@@ -1,4 +1,4 @@
-import { PLAYERS, FORMATS, newTournament, placePlayer, lockDraw, reopenDraw, getMatch, recordScore, clearScore, dependentResults, validateTournament } from './core.js';
+import { getPlayers, FORMATS, newTournament, placePlayer, lockDraw, reopenDraw, getMatch, recordScore, clearScore, dependentResults, validateTournament } from './core.js?v=10-player-20261012';
 
 const $ = id => document.getElementById(id);
 const icons = {
@@ -28,9 +28,13 @@ document.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = icon(el.
 const FORMAT = document.body.dataset.format || 'reference';
 const formatConfig = FORMATS[FORMAT];
 const MATCHES = formatConfig.matches;
-const STORAGE_KEY = FORMAT === 'reference' ? 'b-bad-2026:desk:v1' : 'b-bad-2026:desk:balanced:v1';
+const PLAYERS = getPlayers(newTournament(FORMAT));
+const TOTAL_PLAYERS = PLAYERS.length;
+const TOTAL_MATCHES = MATCHES.length;
+const FINAL_ID = formatConfig.final;
+const STORAGE_KEY = FORMAT === 'reference' ? 'b-bad-2026:desk:v1' : 'b-bad-2026:desk:balanced:v2';
 const playerById = Object.fromEntries(PLAYERS.map(player => [player.id, player]));
-const slotLabels = FORMAT === 'reference' ? ['Trận 1', 'Trận 1', 'Trận 2', 'Trận 2', 'Trận 3', 'Trận 3', 'Trận 4', 'Trận 4', 'Miễn vòng'] : ['Sơ loại','Sơ loại','Tứ kết 1','Tứ kết 2','Tứ kết 2','Tứ kết 3','Tứ kết 3','Tứ kết 4','Tứ kết 4'];
+const slotLabels = FORMAT === 'reference' ? ['Trận 1', 'Trận 1', 'Trận 2', 'Trận 2', 'Trận 3', 'Trận 3', 'Trận 4', 'Trận 4', 'Miễn vòng'] : ['Sơ loại 1','Sơ loại 1','Sơ loại 2','Sơ loại 2','Tứ kết 1','Tứ kết 2','Tứ kết 2','Tứ kết 3','Tứ kết 4','Tứ kết 4'];
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let state = newTournament(FORMAT);
 let history = [];
@@ -43,15 +47,27 @@ let currentScale = 1;
 let loadError = '';
 let storageFailed = false;
 let wasFullscreen = false;
+let legacyBackup = null;
+
+$('stat-players').textContent = String(TOTAL_PLAYERS).padStart(2,'0');
+$('stat-matches').textContent = String(TOTAL_MATCHES).padStart(2,'0');
+document.querySelector('.count-tag').textContent = String(TOTAL_PLAYERS).padStart(2,'0');
+$('hero-player-count').textContent = `${TOTAL_PLAYERS} tay vợt. Một nhà vô địch.`;
+document.querySelector('.help-steps li:nth-child(2) p').textContent = `Xếp đủ ${TOTAL_PLAYERS} người và bấm “Bắt đầu thi đấu”. Nhánh sẽ được giữ cố định.`;
 
 $('format-' + FORMAT).classList.add('active');
 $('format-' + FORMAT).setAttribute('aria-current','page');
 $('format-note').textContent = formatConfig.note;
-$('compare-link').href = FORMAT === 'reference' ? './balanced.html' : './';
+$('compare-link').href = FORMAT === 'reference' ? './' : './reference.html';
 if (FORMAT === 'balanced') {
-  document.querySelector('.draw-note p>span').textContent='Xếp 2 người đánh sơ loại và 7 người vào thẳng tứ kết theo vòng quay ngoài.';
-  document.querySelector('.help-steps li:first-child p').textContent='Chọn thẻ tên rồi bấm vị trí hoặc kéo thả. Hai ô ở vòng sơ loại dành cho hai người được vòng quay ngoài chọn; bảy tên còn lại xếp vào tứ kết.';
+  document.querySelector('.draw-note p>span').textContent='Xếp 4 người vào 2 trận sơ loại và 6 người vào thẳng tứ kết theo vòng quay ngoài.';
+  document.querySelector('.help-steps li:first-child p').textContent='Chọn thẻ tên rồi bấm vị trí hoặc kéo thả. Bốn ô ở hai trận sơ loại dành cho bốn người được vòng quay ngoài chọn; sáu tên còn lại xếp vào tứ kết.';
+  try {
+    const old=JSON.parse(localStorage.getItem('b-bad-2026:desk:balanced:v1'));
+    if(old?.state?.version===1 && old.state.format==='balanced' && old.state.slots?.length===9) legacyBackup=old;
+  } catch { /* A corrupt legacy snapshot is left untouched. */ }
 }
+$('legacy-export-button').hidden = !legacyBackup;
 $('confirm-dialog').setAttribute('aria-labelledby','confirm-title');
 $('confirm-dialog').setAttribute('aria-describedby','confirm-description');
 $('help-dialog').setAttribute('aria-label','Hướng dẫn vận hành B-Bad 2026');
@@ -116,7 +132,7 @@ function avatar(id, extraClass = '') {
 function renderRoster() {
   const locked = state.phase === 'play';
   const losers = new Set(MATCHES.flatMap(({ id }) => { const m = getMatch(state, id); return m.winner ? m.players.filter(player => player !== m.winner) : []; }));
-  const champion = getMatch(state, 'm8').winner;
+  const champion = getMatch(state, FINAL_ID).winner;
   $('roster').innerHTML = PLAYERS.map(player => {
     const slot = state.slots.indexOf(player.id);
     const assigned = slot !== -1;
@@ -124,9 +140,9 @@ function renderRoster() {
     return `<button type="button" class="player-card${assigned ? ' assigned' : ''}${selected === player.id ? ' selected' : ''}" data-select="${player.id}" draggable="${!locked}" aria-pressed="${selected === player.id}" aria-label="${player.name}, ${label}" ${locked ? 'disabled' : ''}>${avatar(player.id)}<span class="player-name">${player.name}</span><span class="roster-meta">${selected === player.id ? 'Đang chọn' : label}</span>${!locked && !assigned ? `<span class="drag-handle">${icon('drag')}</span>` : ''}</button>`;
   }).join('');
   const count = state.slots.filter(Boolean).length;
-  $('allocation-label').textContent = `Đã xếp ${count} / 9 người`;
-  $('allocation-percent').textContent = `${Math.round(count / 9 * 100)}%`;
-  $('allocation-progress').style.width = `${count / 9 * 100}%`;
+  $('allocation-label').textContent = `Đã xếp ${count} / ${TOTAL_PLAYERS} người`;
+  $('allocation-percent').textContent = `${Math.round(count / TOTAL_PLAYERS * 100)}%`;
+  $('allocation-progress').style.width = `${count / TOTAL_PLAYERS * 100}%`;
   $('roster-instruction').textContent = locked ? 'Sơ đồ đã khóa. Chọn trận đấu để nhập tỉ số.' : 'Chọn thẻ tên, rồi chọn vị trí trên sơ đồ.';
   $('clear-placement').hidden = locked || !selected || !state.slots.includes(selected);
   if (selected) $('clear-placement').setAttribute('aria-label',`Đưa ${playerById[selected].name} về danh sách chưa xếp`);
@@ -169,15 +185,15 @@ function renderBracket() {
   const bye = state.slots[8];
   const editable = state.phase === 'draw';
   const byeContent = `${bye ? avatar(bye) : `<span class="slot-icon">${icon('plus')}</span>`}<span class="slot-name${bye ? '' : ' slot-placeholder'}">${bye ? playerById[bye].name : 'Chọn người miễn vòng'}<span class="bye-label">MIỄN VÒNG 1</span></span><span class="bye-symbol">${icon('bye')}</span>`;
-  const byeHtml = formatConfig.bye ? `<div class="bye-card">${editable ? `<button type="button" class="match-slot${selected ? ' target' : ''}" data-slot="8" ${bye ? `data-player="${bye}"` : ''} aria-label="Suất miễn vòng đầu${bye ? ', ' + playerById[bye].name : ', trống'}">${byeContent}</button>` : `<div class="match-slot" ${bye ? `data-player="${bye}"` : ''}>${byeContent}</div>`}</div>` : '<div class="format-explainer"><span>01 TRẬN SƠ LOẠI</span><strong>Đủ 8 người.<br>Vào tứ kết.</strong><p>2 người đánh sơ loại.<br>7 người vào thẳng tứ kết.</p><small>3–4 trận thắng để lên ngôi ↗</small></div>';
+  const byeHtml = formatConfig.bye ? `<div class="bye-card">${editable ? `<button type="button" class="match-slot${selected ? ' target' : ''}" data-slot="8" ${bye ? `data-player="${bye}"` : ''} aria-label="Suất miễn vòng đầu${bye ? ', ' + playerById[bye].name : ', trống'}">${byeContent}</button>` : `<div class="match-slot" ${bye ? `data-player="${bye}"` : ''}>${byeContent}</div>`}</div>` : '<div class="format-explainer ten-player-note"><span>02 TRẬN SƠ LOẠI</span><strong>4 người sơ loại.</strong><p>6 người vào thẳng tứ kết.</p><small>Hai suất đi tiếp ở hai nửa sơ đồ ↗</small></div>';
   const cards = MATCHES.map(({ id }) => {
     const match = getMatch(state, id);
     const assigned = match.players.every(Boolean);
     const status = match.winner ? 'Đã chốt' : match.ready ? 'Sẵn sàng' : assigned ? 'Chờ khóa nhánh' : 'Đang chờ';
-    const action = match.ready ? `<button type="button" class="score-open" data-score="${id}" aria-label="${match.score ? 'Sửa kết quả' : 'Nhập tỉ số'} trận ${match.number}">${icon(match.score ? 'check' : 'score')}${match.score ? 'Sửa kết quả' : 'Nhập tỉ số'}</button>` : `<div class="match-waiting">${state.phase === 'draw' ? id === 'm8' ? 'TRẬN ĐẤU CUỐI CÙNG' : 'XẾP NHÁNH THỦ CÔNG' : 'CHỜ NGƯỜI THẮNG ĐI TIẾP'}</div>`;
-    return `<article class="match-card${match.ready ? ' ready' : ''}${match.winner ? ' finished' : ''}${id === 'm8' ? ' final-card' : ''}" style="left:${match.x}px;top:${match.y}px" data-match="${id}" aria-label="Trận ${match.number}"><div class="match-meta"><span class="match-number">${id === 'm8' ? icon('trophy') : ''}TRẬN 0${match.number}</span><span class="match-status">${status}</span></div>${slotRow(match,0)}${slotRow(match,1)}${action}</article>`;
+    const action = match.ready ? `<button type="button" class="score-open" data-score="${id}" aria-label="${match.score ? 'Sửa kết quả' : 'Nhập tỉ số'} trận ${match.number}">${icon(match.score ? 'check' : 'score')}${match.score ? 'Sửa kết quả' : 'Nhập tỉ số'}</button>` : `<div class="match-waiting">${state.phase === 'draw' ? id === FINAL_ID ? 'TRẬN ĐẤU CUỐI CÙNG' : 'XẾP NHÁNH THỦ CÔNG' : 'CHỜ NGƯỜI THẮNG ĐI TIẾP'}</div>`;
+    return `<article class="match-card${match.ready ? ' ready' : ''}${match.winner ? ' finished' : ''}${id === FINAL_ID ? ' final-card' : ''}" style="left:${match.x}px;top:${match.y}px" data-match="${id}" aria-label="Trận ${match.number}"><div class="match-meta"><span class="match-number">${id === FINAL_ID ? icon('trophy') : ''}TRẬN 0${match.number}</span><span class="match-status">${status}</span></div>${slotRow(match,0)}${slotRow(match,1)}${action}</article>`;
   }).join('');
-  const champion = getMatch(state, 'm8').winner;
+  const champion = getMatch(state, FINAL_ID).winner;
   const championContent = `${icon('trophy')}<span>${champion ? 'NHÀ VÔ ĐỊCH' : 'CHIẾC CÚP ĐANG CHỜ'}</span><strong>${champion ? playerById[champion].name : 'Ai sẽ lên ngôi?'}</strong>${champion ? '<small>B-BAD 2026 · XEM VINH DANH ↗</small>' : ''}`;
   const championHtml = champion ? `<button type="button" class="champion-card champion-found" style="top:${formatConfig.championY}px" data-champion aria-label="Vinh danh ${playerById[champion].name}">${championContent}</button>` : `<div class="champion-card" style="top:${formatConfig.championY}px">${championContent}</div>`;
   $('bracket-canvas').innerHTML = rounds + renderLinks() + byeHtml + cards + championHtml;
@@ -189,17 +205,17 @@ function render() {
   renderBracket();
   const locked = state.phase === 'play';
   const count = state.slots.filter(Boolean).length;
-  const champion = getMatch(state, 'm8').winner;
+  const champion = getMatch(state, FINAL_ID).winner;
   $('phase-tag').className = `phase-tag${champion ? ' done' : locked ? ' play' : ''}`;
   $('phase-tag').innerHTML = `<span></span>${champion ? 'Giải đã hoàn tất' : locked ? 'Đang thi đấu' : 'Đang xếp nhánh'}`;
-  $('phase-button').disabled = !locked && count !== 9;
+  $('phase-button').disabled = !locked && count !== TOTAL_PLAYERS;
   $('phase-button-label').textContent = locked ? 'Mở lại xếp nhánh' : 'Bắt đầu thi đấu';
   $('phase-button').classList.toggle('primary', !locked);
   $('phase-button').classList.toggle('subtle', locked);
   $('undo-button').disabled = history.length === 0;
   $('operation-hint').classList.toggle('selected', Boolean(selected));
-  $('operation-text').textContent = selected ? `Đã chọn ${playerById[selected].name}. Chọn một ô để xếp.` : champion ? `${playerById[champion].name} là nhà vô địch B-Bad 2026!` : locked ? 'Chọn trận đủ hai người để chốt tỉ số một set.' : count === 9 ? 'Đủ 9 người. Sẵn sàng khóa nhánh và thi đấu.' : 'Bắt đầu bằng một thẻ tên ở bên trái.';
-  $('match-progress').textContent = `${Object.keys(state.results).length} / 8 trận hoàn tất`;
+  $('operation-text').textContent = selected ? `Đã chọn ${playerById[selected].name}. Chọn một ô để xếp.` : champion ? `${playerById[champion].name} là nhà vô địch B-Bad 2026!` : locked ? 'Chọn trận đủ hai người để chốt tỉ số một set.' : count === TOTAL_PLAYERS ? `Đủ ${TOTAL_PLAYERS} người. Sẵn sàng khóa nhánh và thi đấu.` : 'Bắt đầu bằng một thẻ tên ở bên trái.';
+  $('match-progress').textContent = `${Object.keys(state.results).length} / ${TOTAL_MATCHES} trận hoàn tất`;
   updateSaveStatus();
 }
 
@@ -371,7 +387,7 @@ function previewWinner() {
   $('score-error').textContent = valid && Number(a) === Number(b) ? 'Hai tỉ số đang bằng nhau. Nhập điểm của set đã phân thắng bại.' : '';
   if (match && valid && Number(a) !== Number(b)) {
     const winner = playerById[match.players[Number(a) > Number(b) ? 0 : 1]];
-    $('winner-preview').innerHTML = `${icon(scoringId === 'm8' ? 'trophy' : 'arrow')}<span><strong>${winner.name}</strong> ${scoringId === 'm8' ? 'sẽ trở thành nhà vô địch.' : 'sẽ đi tiếp vào nhánh kế tiếp.'}</span>`;
+    $('winner-preview').innerHTML = `${icon(scoringId === FINAL_ID ? 'trophy' : 'arrow')}<span><strong>${winner.name}</strong> ${scoringId === FINAL_ID ? 'sẽ trở thành nhà vô địch.' : 'sẽ đi tiếp vào nhánh kế tiếp.'}</span>`;
   } else $('winner-preview').innerHTML = `${icon('arrow')}<span>Người thắng sẽ được đưa vào nhánh tiếp theo.</span>`;
 }
 $('score-a').addEventListener('input', previewWinner);
@@ -396,7 +412,7 @@ $('score-form').addEventListener('submit', async event => {
     $('score-dialog').close();
     commit(next, destination ? { playerId:winner, from, to:`[data-match="${destination.id}"] [data-player="${winner}"]` } : null);
     toast(`Trận ${match.number}: ${playerById[match.players[0]].name} ${a}–${b} ${playerById[match.players[1]].name}`);
-    if (id === 'm8' && match.winner !== winner) setTimeout(showChampion, reducedMotion.matches ? 50 : 600);
+    if (id === FINAL_ID && match.winner !== winner) setTimeout(showChampion, reducedMotion.matches ? 50 : 600);
   } catch (error) { $('score-error').textContent = error.message; }
   finally { submit.disabled = false; }
 });
@@ -411,7 +427,7 @@ $('clear-score-button').addEventListener('click', async () => {
 });
 
 function showChampion() {
-  const final = getMatch(state,'m8');
+  const final = getMatch(state,FINAL_ID);
   if (!final.winner || $('champion-dialog').open) return;
   $('champion-name').textContent = playerById[final.winner].name;
   $('champion-score').textContent = `${playerById[final.players[0]].name} ${final.score.a} — ${final.score.b} ${playerById[final.players[1]].name}`;
@@ -433,6 +449,17 @@ function exportBackup() {
   toast('Đã tải bản sao lưu. Mang tệp này sang MacBook để nhập lại.');
 }
 $('export-button').addEventListener('click',exportBackup);
+$('legacy-export-button').addEventListener('click',()=>{
+  if(!legacyBackup) return;
+  const url=URL.createObjectURL(new Blob([JSON.stringify({app:'b-bad-2026',exportedAt:new Date().toISOString(),state:legacyBackup.state},null,2)],{type:'application/json'}));
+  const link=document.createElement('a');
+  link.href=url;
+  link.download='b-bad-2026-balanced-9-legacy-backup.json';
+  document.body.append(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),10000);
+  $('tools-menu').open=false;
+  toast('Đã xuất bản sao lưu bảng 9 người cũ. Dữ liệu cũ vẫn được giữ trên máy.');
+});
 $('storage-export').addEventListener('click',exportBackup);
 $('import-button').addEventListener('click', () => { $('tools-menu').open=false; $('import-file').click(); });
 $('import-file').addEventListener('change',async () => {
@@ -444,7 +471,7 @@ $('import-file').addEventListener('change',async () => {
     const data = JSON.parse(await file.text());
     const imported = validateTournament(data.app === 'b-bad-2026' ? data.state : data);
     if (imported.format !== FORMAT) throw new Error(`Bản sao lưu thuộc “${FORMATS[imported.format].name}”. Mở đúng trang phương án đó để nhập lại.`);
-    if (await confirmAction('Nhập bản sao lưu?', `Bản sao lưu có ${imported.slots.filter(Boolean).length}/9 người được xếp và ${Object.keys(imported.results).length}/8 trận có kết quả. Tiến độ hiện tại sẽ được thay thế. Có thể hoàn tác.`, 'Nhập dữ liệu')) {
+    if (await confirmAction('Nhập bản sao lưu?', `Bản sao lưu có ${imported.slots.filter(Boolean).length}/${TOTAL_PLAYERS} người được xếp và ${Object.keys(imported.results).length}/${TOTAL_MATCHES} trận có kết quả. Tiến độ hiện tại sẽ được thay thế. Có thể hoàn tác.`, 'Nhập dữ liệu')) {
       commit(imported);
       if (JSON.stringify(imported) === JSON.stringify(state)) persist();
       toast('Đã nhập bản sao lưu. Bạn có thể tiếp tục giải trên máy này.');
