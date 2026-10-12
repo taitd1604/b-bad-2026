@@ -1,0 +1,11 @@
+{
+  "name": "b-bad-2026",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "start": "node scripts/serve.cjs",
+    "sync-pages": "node scripts/sync-pages.cjs"
+  }
+}

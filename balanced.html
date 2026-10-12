@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111410">
+  <meta name="description" content="B-Bad 2026 — sơ đồ và bàn điều hành giải đơn cầu lông. Xếp nhánh thủ công, nhập tỉ số và theo dõi đường đến ngôi vô địch.">
+  <title>B-Bad 2026 · Sơ loại và tứ kết</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body data-format="balanced">
+  <header class="topbar">
+    <a href="./" class="brand" aria-label="B-Bad 2026 trang chủ"><span class="brand-mark">B<span>↗</span></span><span>B-BAD<span class="brand-year">2026</span></span></a>
+    <span class="topbar-caption">BADMINTON / SINGLES TOURNAMENT</span>
+    <div class="topbar-tools">
+      <span class="save-status" id="save-status"><span class="status-dot"></span><span id="save-label">Đã lưu trên máy</span></span>
+      <button class="button subtle" id="presentation-button" type="button"><span data-icon="expand"></span><span id="presentation-label">Trình chiếu</span></button>
+      <details class="tools-menu" id="tools-menu">
+        <summary class="icon-button" aria-label="Công cụ và sao lưu"><span data-icon="more"></span></summary>
+        <div class="menu-items">
+          <button type="button" id="export-button"><span data-icon="download"></span>Xuất bản sao lưu</button>
+          <button type="button" id="import-button"><span data-icon="upload"></span>Nhập bản sao lưu</button>
+          <button type="button" id="print-button"><span data-icon="print"></span>In sơ đồ</button>
+          <div class="menu-separator"></div>
+          <button type="button" id="help-button"><span data-icon="help"></span>Hướng dẫn vận hành</button>
+          <button type="button" id="reset-button" class="danger-text"><span data-icon="reset"></span>Tạo giải mới</button>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="tournament-title">
+      <div class="hero-copy"><p class="eyebrow"><span class="tiny-line"></span>HẸN NHAU TRÊN SÂN</p><h1 id="tournament-title">B-BAD <span>2026</span><sup>↗</sup></h1><p class="hero-description">9 tay vợt. Một nhà vô địch. <span>Hết mình cho từng điểm số.</span></p></div>
+      <div class="hero-side">
+        <svg class="court-art" viewBox="0 0 190 110" fill="none" aria-hidden="true"><g transform="translate(12 8) rotate(-12 80 48)"><rect x="10" y="10" width="140" height="84" rx="1"/><path d="M10 52H150M28 10V94M132 10V94M10 30H150M10 74H150M80 10V30M80 74V94"/><path class="court-net" d="M5 52H155"/></g><g class="shuttle-art" transform="translate(126 28) rotate(24)"><path d="M0 40L-22 0Q0-7 22 0L8 40Z"/><path d="M-13 0L1 40M0-3L4 40M13 0L7 40M-16 13H16M-10 26H12"/><path d="M0 40H8V46Q4 52 0 46Z"/></g><circle cx="164" cy="83" r="3"/></svg>
+        <div class="hero-stats"><div><strong>09</strong><span>TAY VỢT</span></div><div><strong>08</strong><span>TRẬN ĐẤU</span></div><div><strong>01</strong><span>SET / TRẬN</span></div></div>
+      </div>
+    </section>
+
+    <nav class="format-switch" aria-label="Chọn phương án sơ đồ"><a id="format-reference" href="./"><span>01</span>Sơ đồ ban đầu</a><a id="format-balanced" href="./balanced.html"><span>02</span>Nhánh cân đối</a><span class="format-note" id="format-note">4 trận vòng đầu · 1 suất miễn vòng</span><a id="compare-link" class="compare-link" href="./balanced.html" target="_blank" rel="noopener">Mở song song<span data-icon="external"></span></a></nav>
+    <div class="workspace">
+      <aside class="roster-panel" aria-labelledby="roster-title">
+        <div class="panel-heading"><h2 id="roster-title">Người chơi</h2><span class="count-tag">09</span></div>
+        <p class="panel-description" id="roster-instruction">Chọn thẻ tên, rồi chọn vị trí trên sơ đồ.</p>
+        <div class="roster" id="roster"></div>
+        <div class="allocation-status"><span id="allocation-label">Đã xếp 0 / 9 người</span><span id="allocation-percent">0%</span><div class="progress-track"><div id="allocation-progress"></div></div></div>
+        <button class="button subtle clear-placement" type="button" id="clear-placement" hidden><span data-icon="close"></span>Bỏ khỏi nhánh</button>
+        <div class="draw-note"><span data-icon="external"></span><p><strong>Bốc thăm bên ngoài</strong><span>Xếp theo kết quả vòng quay của bạn, kể cả suất miễn vòng.</span></p></div>
+      </aside>
+
+      <section class="bracket-panel" aria-labelledby="bracket-title">
+        <div class="bracket-heading"><div><p class="eyebrow">TOURNAMENT BRACKET</p><h2 id="bracket-title">Đường đến ngôi vô địch<span>↗</span></h2></div><span class="phase-tag" id="phase-tag"><span></span>Đang xếp nhánh</span></div>
+        <div class="operation-bar"><div class="operation-hint" id="operation-hint"><span data-icon="cursor"></span><span id="operation-text">Bắt đầu bằng một thẻ tên ở bên trái.</span></div><div class="operation-actions"><button class="icon-button" id="undo-button" type="button" aria-label="Hoàn tác thao tác vừa rồi" title="Hoàn tác (Ctrl / ⌘ Z)" disabled><span data-icon="undo"></span></button><button class="button primary" id="phase-button" type="button" disabled><span id="phase-button-label">Bắt đầu thi đấu</span><span data-icon="arrow"></span></button></div></div>
+        <div class="bracket-viewport" id="bracket-viewport" tabindex="0" aria-label="Sơ đồ đấu. Có thể cuộn khi phóng to."><div class="bracket-sizer" id="bracket-sizer"><div class="bracket-canvas" id="bracket-canvas"></div></div></div>
+        <div class="bracket-footer"><div class="legend"><span><i class="legend-dot waiting"></i>Chờ thi đấu</span><span><i class="legend-dot finished"></i>Đã có kết quả</span></div><div class="zoom-tools"><button type="button" class="icon-button" id="zoom-out" aria-label="Thu nhỏ"><span data-icon="minus"></span></button><span id="zoom-label">Vừa màn hình</span><button type="button" class="icon-button" id="zoom-in" aria-label="Phóng to"><span data-icon="plus"></span></button><button type="button" class="fit-button" id="fit-button" title="Vừa màn hình">Vừa khung</button></div></div>
+      </section>
+    </div>
+    <footer class="page-footer"><span>B-BAD 2026 <span class="footer-divider">/</span> CẦU LÔNG ĐƠN · LOẠI TRỰC TIẾP</span><span id="match-progress">0 / 8 trận hoàn tất</span></footer>
+  </main>
+
+  <dialog id="score-dialog" class="score-dialog" aria-labelledby="score-title"><form id="score-form"><div class="dialog-top"><p class="eyebrow" id="score-eyebrow">KẾT QUẢ TRẬN ĐẤU</p><button class="icon-button" type="button" data-close="score-dialog" aria-label="Đóng"><span data-icon="close"></span></button></div><h2 id="score-title">Chốt tỉ số</h2><p class="dialog-description">Nhập điểm cuối cùng của một set.</p><div class="score-matchup"><div class="score-player"><div id="score-avatar-a" class="score-avatar"></div><label id="score-name-a" for="score-a"></label><input id="score-a" name="score-a" type="number" min="0" max="999" step="1" required inputmode="numeric" aria-describedby="score-error" placeholder="0"></div><span class="score-vs">VS</span><div class="score-player"><div id="score-avatar-b" class="score-avatar"></div><label id="score-name-b" for="score-b"></label><input id="score-b" name="score-b" type="number" min="0" max="999" step="1" required inputmode="numeric" aria-describedby="score-error" placeholder="0"></div></div><p id="score-error" class="form-error" role="alert"></p><div class="winner-preview" id="winner-preview"><span data-icon="arrow"></span><span>Người thắng sẽ được đưa vào nhánh tiếp theo.</span></div><div class="dialog-actions"><button class="button danger subtle" type="button" id="clear-score-button" hidden>Xóa kết quả</button><button class="button subtle" type="button" data-close="score-dialog">Hủy</button><button class="button primary" type="submit">Xác nhận kết quả<span data-icon="check"></span></button></div></form></dialog>
+
+  <dialog id="confirm-dialog" class="confirm-dialog"><div class="dialog-top"><p class="eyebrow">B-BAD 2026</p><button class="icon-button" type="button" id="confirm-close" aria-label="Đóng"><span data-icon="close"></span></button></div><h2 id="confirm-title"></h2><p class="dialog-description" id="confirm-description"></p><div class="dialog-actions"><button class="button subtle" type="button" id="confirm-cancel">Hủy</button><button class="button primary" type="button" id="confirm-accept">Xác nhận</button></div></dialog>
+
+  <dialog id="help-dialog" class="help-dialog"><div class="dialog-top"><p class="eyebrow">BÀN ĐIỀU HÀNH</p><button class="icon-button" type="button" data-close="help-dialog" aria-label="Đóng"><span data-icon="close"></span></button></div><h2>Mọi thứ sẵn sàng.<br>Đến lượt bạn.</h2><ol class="help-steps"><li><strong>Quay bên ngoài, xếp trên web</strong><p>Chọn thẻ tên rồi bấm một vị trí trống. Bạn cũng có thể kéo thả tên. Ô “Miễn vòng 1” dành cho người được vòng quay chọn.</p></li><li><strong>Khóa nhánh, bắt đầu thi đấu</strong><p>Xếp đủ 9 người và bấm “Bắt đầu thi đấu”. Nhánh sẽ được giữ cố định.</p></li><li><strong>Chốt tỉ số, đi tiếp</strong><p>Bấm “Nhập tỉ số” tại trận đủ hai người. Nhập điểm một set và xác nhận; người thắng tự vào trận tiếp theo.</p></li><li><strong>Mang giải sang MacBook</strong><p>Trong menu ⋯, chọn “Xuất bản sao lưu” trên PC, rồi “Nhập bản sao lưu” trên MacBook. Từ đó, vận hành trên MacBook. Tỉ số tự lưu trong trình duyệt đang dùng.</p></li></ol><p class="help-footnote">Hoàn tác: Ctrl / ⌘ Z · Trình chiếu để ẩn danh sách tên · Vừa khung để xem trọn sơ đồ.</p><button class="button primary" type="button" data-close="help-dialog">Đã rõ<span data-icon="arrow"></span></button></dialog>
+
+  <dialog id="champion-dialog" class="champion-dialog"><div id="confetti" aria-hidden="true"></div><button class="icon-button champion-close" type="button" data-close="champion-dialog" aria-label="Đóng"><span data-icon="close"></span></button><p class="eyebrow">B-BAD 2026 / CHAMPION</p><div class="champion-trophy" data-icon="trophy"></div><p class="champion-kicker">XIN CHÚC MỪNG NHÀ VÔ ĐỊCH</p><h2 id="champion-name"></h2><p class="champion-score" id="champion-score"></p><p class="champion-message">Hết mình trên sân. Xứng đáng trên đỉnh.</p><button class="button primary" type="button" data-close="champion-dialog">Trở về sơ đồ<span data-icon="arrow"></span></button></dialog>
+
+  <input id="import-file" type="file" accept=".json,application/json" hidden>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div id="storage-alert" class="storage-alert" role="alert" hidden>Chưa thể lưu trên máy. Hãy xuất bản sao lưu trước khi đóng trang.<button type="button" id="storage-export">Xuất ngay ↗</button></div>
+  <noscript>Vui lòng bật JavaScript để sử dụng bàn điều hành B-Bad 2026.</noscript>
+</body>
+</html>
