@@ -8,8 +8,8 @@ Website tĩnh, không cần tài khoản, không random và không có máy ch�
 
 | Phương án | Link |
 | --- | --- |
-| Sơ đồ ban đầu, giữ cách nối nhánh trong ảnh | https://taitd1604.github.io/b-bad-2026/ |
-| Nhánh cân đối: 1 trận sơ loại → tứ kết → bán kết → chung kết | https://taitd1604.github.io/b-bad-2026/balanced.html |
+| Sơ đồ ban đầu, giữ cách nối nhánh trong ảnh | https://b-bad-2026.github.io/ |
+| Nhánh cân đối: 1 trận sơ loại → tứ kết → bán kết → chung kết | https://b-bad-2026.github.io/balanced.html |
 
 Thanh chọn phương án nằm trên sơ đồ. Bấm **Mở song song** để mở phương án còn lại trong tab mới; kéo hai cửa sổ cạnh nhau để so sánh. Hai trang có tiến độ, hoàn tác và bản sao lưu riêng. Thử/xóa dữ liệu một phương án không thay đổi phương án còn lại.
 
@@ -73,9 +73,11 @@ Preview: `http://127.0.0.1:4186/`. Kiểm tra trình duyệt bổ sung nằm tro
 
 ## GitHub Pages
 
-Repo riêng: `taitd1604/b-bad-2026`. Publish từ nhánh `main`, thư mục gốc; `.nojekyll` giữ các tệp tĩnh nguyên trạng. Mở `https://taitd1604.github.io/b-bad-2026/` sau khi deployment hoàn tất.
+Repo nguồn: `taitd1604/b-bad-2026`. Repo phát hành theo tên giải: `b-bad-2026/b-bad-2026.github.io`. Website chính thức dùng `https://b-bad-2026.github.io/`, nguồn Pages là `main`/`/`; `.nojekyll` giữ các tệp tĩnh nguyên trạng. Repo phát hành chỉ chứa bảy tệp runtime và cấu hình Git, không có tài liệu/đường dẫn tài khoản cá nhân trong ứng dụng.
 
-Script `scripts/github-pages.py` dùng tài khoản Git đã đăng nhập qua Git Credential Manager. Credential chỉ nằm trong bộ nhớ; không ghi vào tệp hoặc lệnh Git. Mặc định script chỉ đọc thông tin tài khoản/repo; `--publish` push repo riêng và bật Pages, `--status` đọc trạng thái. Không sao chép dữ liệu vận hành hoặc dự án PES vào repo này.
+Để cập nhật website chính thức sau khi sửa/kiểm tra app, chạy `python scripts/publish-brand.py --publish`. Script kiểm tra tài khoản/role organization, sao chép danh sách runtime cố định sang checkout bỏ qua Git ở `.qa/brand-site`, commit và push repo theo tên giải. Mặc định không có `--publish` thì chỉ đọc trạng thái sẵn sàng. Credential chỉ nằm trong bộ nhớ qua Git Credential Manager; không in hoặc lưu vào tệp/lệnh. Không sao chép dữ liệu vận hành hoặc dự án PES vào repo phát hành. `scripts/github-pages.py` giữ cho repo nguồn/bản Pages ban đầu.
+
+Sau khi đổi từ link cũ sang địa chỉ tên giải, dữ liệu trình duyệt không tự chuyển giữa hai hostname. Nếu đã xếp tên/nhập điểm ở link cũ, xuất bản sao lưu rồi nhập vào phương án tương ứng ở link mới.
 
 ## Kiểm tra đã thực hiện
 
